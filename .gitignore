@@ -1,0 +1,29 @@
+# Hasil ekspor LiveChat (data sensitif dan berukuran besar)
+livechat_FULL_*/
+
+# File hasil ekspor jika berada di lokasi lain
+*.csv
+*.jsonl
+*.sqlite3
+
+# Kredensial dan konfigurasi lokal
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+
+# File lokal/editor/OS
+.vscode/
+.idea/
+*.log
+Thumbs.db
+Desktop.ini
+

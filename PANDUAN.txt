@@ -1,0 +1,66 @@
+EKSPOR LIVECHAT FULL (2023-01-01 S.D. 2026-11-12)
+==============================================
+
+1) Install library (sekali saja):
+   py -m pip install requests
+
+2) Letakkan 2 file .py ini dalam folder baru, misalnya:
+   C:\Users\itbob\Downloads\ctan\LC-Token_API\FULL-EXPORT
+
+3) Buka Terminal VS Code pada folder tersebut. Jalankan uji coba 2 halaman:
+   py -u .\export_semua_livechat.py --max-pages 2
+
+4) Isi Account ID dan Personal Access Token saat diminta.
+   Token memerlukan scope chats--all:ro (atau scope akses grup yang sesuai).
+   Password/token tidak akan terlihat saat diketik. Jangan tempel di chat.
+
+5) Jika uji coba berjalan lancar, lanjutkan semua data:
+   py -u .\export_semua_livechat.py
+   Tidak perlu hapus folder hasil: otomatis resume, bukan mulai lagi.
+
+6) Cek progres kapan saja dari terminal lain:
+   py -u .\export_semua_livechat.py --status
+
+7) Tampilkan 20 pesan pertama untuk memastikan isi customer/agent:
+   py -u .\lihat_isi_chat.py --limit 20
+   Atau tampilkan chat tertentu:
+   py -u .\lihat_isi_chat.py --chat-id ID_DARI_CSV --limit 100
+
+8) Struktur hasil:
+   livechat_FULL_2023-01-01_2026-11-12/
+     raw_threads/part_00001.jsonl, part_00002.jsonl, ...
+         Data mentah lengkap per thread: ID chat, users, events, teks,
+         metadata file/gambar, forms, system messages, dll.
+     messages/part_00001.csv, part_00002.csv, ...
+         Hanya event pesan, text customer/agent, tanggal, Chat ID, Thread ID.
+     checkpoint.sqlite3
+         Basis data checkpoint/deduplikasi internal, JANGAN DIHAPUS saat proses.
+     export_info.json
+         Status SELESAI / BELUM_SELESAI dan ringkasan hitungan.
+
+Perhitungan:
+- 'chats_unique' = jumlah chat_id unik di arsip.
+- 'threads' = jumlah pasangan (chat_id,thread_id) unik.
+- 'messages' = jumlah event type=message (termasuk welcome message otomatis).
+- 'messages_nonempty' = event type=message dengan string text tidak kosong.
+- 'other_events' = file/form/system dll.
+- Angka total_chats di Reports API bisa berbeda dari hitungan arsip.
+
+PENTING:
+- Ekspor ~5 juta thread sangat besar. Siapkan ruang disk yang lapang.
+- Simpan data sensitif secara lokal/drive internal terenkripsi, batasi akses.
+- Jangan mengunggah file CSV/JSON mentah ke repo GitHub.
+- Konten file/gambar lampiran TIDAK diunduh, hanya tautan dan metadata.
+- Thread restricted_access mungkin tidak memuat isi events.
+- Arsip tidak mencakup chat yang masih aktif, maupun data yang sudah dihapus.
+- Page cursor API dapat kedaluwarsa. Jika error terkait page_id, gunakan:
+   py -u .\export_semua_livechat.py --restart-current-month
+  Thread yang sudah ada akan dilewati, namun pengambilan ulang bulan berjalan
+  bisa memerlukan banyak request.
+- Jangan jalankan dua proses ekspor ke satu folder secara bersamaan.
+- Script ini TIDAK otomatis membuat ZIP raksasa, karena volume mungkin puluhan GB.
+- Untuk ekspor tanggal lain, gunakan --from-date dan --to-date; output akan
+  mengikuti tanggal kecuali --output diisi sendiri.
+- Folder keluaran BERBEDA dari script versi lama (livechat_RAW_*).
+
+Referensi API: https://platform.text.com/docs/messaging/agent-chat-api/
